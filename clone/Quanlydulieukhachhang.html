@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quanlydulieukhachhang</title>
+</head>
+<body>
+<div class="panel">
+    <div class="panel-heading">
+        Nhập thông tin khách hàng
+    </div>
+    <div class="panel-body">
+        <form method="post">
+            <div class="form-group">
+                <label>Họ và tên:</label>
+                <input type="number" name="index" id="index" value="" hidden="true">
+                <input class="form-control" type="text" name="hoten" id="hoten" placeholder="Nhập Họ và Tên">
+            </div>
+            <div class="form-group">
+                <label>Giới tính</label>
+                <select class="form-control" name="gioitinh" id="gioitinh">
+                    <option>Nam</option>
+                    <option>Nữ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Vùng miền</label>
+                <select class="form-control" name="vungmien" id="vungmien" onchange="changeVungmien()">
+                    <option value="">--Chọn--</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tỉnh</label>
+                <select name="tinh" id="tinh">
+                    <option>--Chọn--</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Số lần mua hàng</label>
+                <input class="form-control" type="number" name="solan" id="solan" placeholder="Nhập số lần mua di"
+                       value="0" onkeyup="Updatesolan()">
+            </div>
+            <div class="form-group">
+                <label>Số tiền</label>
+                <input class="form-control" type="number" name="sotien" id="sotien" placeholder="nhập số tiền" value="0"
+                       onkeyup="Updatesolan()">
+            </div>
+            <div class="form-group">
+                <label>Tổng số tiền</label>
+                <input class="form-control" type="text" name="total" id="total" value="0" disabled="true">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" type="button" onclick="addKhachhang()">Thêm khách hàng</button>
+                <button class="btn btn-danger" type="reset">Xoá</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="panel" style="margin-top: 30px;">
+    <div class="panel-heading">
+        Danh sách khách hàng
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Stt</th>
+                <th>Họ và Tên</th>
+                <th>Giới tính</th>
+                <th>Vùng miền</th>
+                <th>Tỉnh thành</th>
+                <th>Số lần Mua</th>
+                <th>Số tiền</th>
+                <th>Tổng số tiền</th>
+            </tr>
+            </thead>
+            <tbody id="result">
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    let position = {
+        "Mien Bac": ["Ha Noi", "Hai Phong", "Thai Binh"],
+        "Mien Trung": ["Nghe AN", "Ha Tinh", "Quang Binh"],
+        "Mien Nam": ["TP HCM", "Ca Mau", "Soc Trang"]
+    }
+    let Khachhanglist = [];
+    let Vungmien = document.getElementById("vungmien");
+    for (let key in position) {
+        Vungmien.innerHTML += `<option value='${key}'> ${key} </option>`
+    }
+
+    function changeVungmien() {
+        key = Vungmien.value
+        Tentinh = position[key]
+        console.log(Tentinh);
+        let Tinh = document.getElementById("tinh");
+        Tinh.innerHTML = "";
+        if (Tentinh != null) {
+            for (let i = 0; i < Tentinh.length; i++) {
+                Tinh.innerHTML += `<option value='${Tentinh[i]}'>${Tentinh[i]}</option>`
+            }
+        }
+    }
+
+    function Updatesolan() {
+        let Solan = document.getElementById("solan").value;
+        let Sotien = document.getElementById("sotien").value;
+
+        Tongtien = (Solan * Sotien)
+        document.getElementById("total").value = Tongtien;
+    }
+
+    let count = 0;
+
+    //++count là cộng lên 1 mới trả về và count ++ trả về count rồi mới cộng lên
+    function addKhachhang() {
+        let Stt = document.getElementById("index").value;
+        let Hovaten = document.getElementById("hoten").value;
+        let Gioitinh = document.getElementById("gioitinh").value;
+        let Vungmien = document.getElementById("vungmien").value;
+        let Tinhthanh = document.getElementById("tinh").value;
+        let Solanmua = document.getElementById("solan").value;
+        let Sotien = document.getElementById("sotien").value;
+        let Tongsotien = document.getElementById("total").value;
+
+        let Thongtin = {
+            'Stt': Stt,
+            'Hovaten': Hovaten,
+            'Gioitinh': Gioitinh,
+            'Vungmien': Vungmien,
+            'Tinhthanh': Tinhthanh,
+            'Solanmua': Solanmua,
+            'Sotien': Sotien,
+            'Tongsotien': Tongsotien
+        }
+        if (Stt != '') {
+            Khachhanglist[Stt] = Thongtin;
+            //bắt buộc cần khai báo biến trước khi thêm giá trị
+            showThongtinkhachang();
+            return;
+        }
+        console.log(Khachhanglist);
+        Khachhanglist.push(Thongtin);
+
+        document.getElementById("result").innerHTML += `<tr>
+                    <td>${++count}</td>
+                    <td>${Hovaten}</td>
+                    <td>${Gioitinh}</td>
+                    <td>${Vungmien}</td>
+                    <td>${Tinhthanh}</td>
+                    <td>${Solanmua}</td>
+                    <td>${Sotien}</td>
+                    <td>${Tongsotien}</td>
+                     <td><button class="bnt bnt-warning " onclick="editKhachhang(${count - 1})">Edit</button></td>
+                      <td><button class="bnt bnt-danger" onclick="deleteKhachhang(${count - 1})">Delete</button></td>
+</tr>`
+    }
+
+    function deleteKhachhang(index) {
+        console.log(index);
+        Khachhanglist.splice(index, 1)
+        showThongtinkhachang();
+
+    }
+
+    function showThongtinkhachang() {
+        for (var i = 0; i < Khachhanglist.length; i++) {
+            document.getElementById("result").innerHTML += `<tr>
+                    <td>${i + 1}</td>
+                    <td>${Khachhanglist.Hovaten}</td>
+                    <td>${Khachhanglist.Gioitinh}</td>
+                    <td>${Khachhanglist.Vungmien}</td>
+                    <td>${Khachhanglist.Tinhthanh}</td>
+                    <td>${Khachhanglist.Solanmua}</td>
+                    <td>${Khachhanglist.Sotien}</td>
+                    <td>${Khachhanglist.Tongsotien}</td>
+                     <td><button class="bnt bnt-warning " onclick="editKhachhang(${count - 1})">Edit</button></td>
+                      <td><button class="bnt bnt-danger" onclick="deleteKhachhang(${count - 1})">Delete</button></td>
+</tr>`
+        }
+    }
+
+    function editKhachhang(Stt) {
+        let khachHang = Khachhanglist[Stt];
+        console.log(khachHang);
+        document.getElementById('index').value = Stt;
+        document.getElementById('hoten').value = khachHang.Hovaten;
+        document.getElementById('gioitinh').value = khachHang.Gioitinh;
+        document.getElementById('vungmien').value = khachHang.Vungmien;
+        document.getElementById('tinh').value = khachHang.Tinhthanh;
+        document.getElementById('solan').value = khachHang.Solanmua;
+        document.getElementById('sotien').value = khachHang.Sotien;
+        document.getElementById('total').value = khachHang.Tongsotien;
+
+    }
+</script>
+</body>
+</html>

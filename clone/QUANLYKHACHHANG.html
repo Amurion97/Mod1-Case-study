@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quan-ly-du-lieu-khach-hang</title>
+</head>
+<body>
+<div class="panel">
+    <div class="panel-heading">
+        <!--cho phép bạn xác định một nhóm các thẻ có cùng một class.nếu có một thẻ div có thuộc tính class="panel",
+        nghĩa là nó thuộc về một nhóm các thẻ div được gọi là "panel". Bạn có thể sử dụng CSS -->
+        Input product detail information
+    </div>
+    <div class="panel-body">
+        <form method="post">
+            <div class="form-group">
+                <label>Product Name:</label>
+                <!--Một nhãn cho trường nhập tên sản phẩm.-->
+                <input type="number" name="index" id="index" value="" >
+                <!-- name là tên trường nhập liệu,được sử dụng để gửi dữ liệu đến máy chủ khi gửi một form.
+                ID  được sử dụng để xác định vị trí của trường nhập liệu trong trang web. -->
+                <input class="form-control" type="text" name="product_name" id="product_name" placeholder="Enter product name">
+                <!--có hai thẻ input nhưng chỉ có một ô đăng nhập do
+                 thẻ input đầu tiên có thuộc tính hidden, nghĩa là nó sẽ không hiển thị
+                 trên trang web và chỉ dùng để lưu trữ thông tin bên trong.
+                 trường input đầu tiên có thể dùng để lưu trữ chỉ số của sản phẩm trong một danh sách sản phẩm-->
+            </div>
+            <div class="form-group">
+                <label>Manufacturer Name:</label>
+                <select class="form-control" id="manuafaturer_name" onchange="changeManufaturer()">
+                    <option value="">-- Choose --</option>
+                    <!--Khi người dùng chọn một giá trị từ danh sách, sự kiện onchange sẽ được kích hoạt và hàm changeManufaturer() sẽ được gọi.-->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Category Name:</label>
+                <select class="form-control" id="category_name">
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Price:</label>
+                <input class="form-control" type="number" name="price" id="price" placeholder="Enter price" value="0" onkeyup="updateTotalPrice()">
+                <!--khi type trong thẻ input là number sẽ hiển thị nút thay đổi number-->
+            <!--giá trị mặc định cho trường nhập giá trị sẽ là 0.-->
+            </div>
+            <div class="form-group">
+                <label>Quantity:</label>
+                <input class="form-control" type="text" name="quantity" id="quantity" placeholder="Enter quantity" value="0" onkeyup="updateTotalPrice()">
+            </div>
+            <div class="form-group">
+                <label>Total Price:</label>
+                <input class="form-control" type="text" name="total_price" id="total_price" value="0" disabled="true">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" type="button" onclick="addProduct()">Add Produce</button>
+                <button class="btn btn-danger" type="reset">Reset</button>
+                <!-- nghĩa là nút đó sẽ thực hiện hành động reset lại giá trị mặc định cho các trường trong một mẫu hoặc form.-->
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<div class="panel" style="margin-top: 20px;">
+    <div class="panel-heading">
+        Product List
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <thead>
+            <!--thẻ "thead" là một phần của thẻ "table" và chứa nội dung tiêu đề của bảng-->
+            <tr>
+                <th>No</th>
+                <th>Product Name</th>
+                <th>Manufacture Name</th>
+                <th>Category Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="result">
+            </tbody>
+            <!--thẻ "tbody" là một phần của thẻ "table" và chứa nội dung chính của bảng.
+             "id="result"" cho phép bạn truy xuất và tùy chỉnh nội dung trong thẻ "tbody" bằng JavaScript -->
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    var manufactureList = {
+        //tạo ra một đối tượng
+        "Apple": [
+            "IPhone 5", "IPhone 5s", "IPhone 12"
+        ],
+        "Sam Sung": [
+            "Galaxy S5", "Galaxy 10"
+        ],
+        "LG": [
+            "1", "2", "3"
+        ]
+    }
+
+    var productList = []
+    //tạo ra một mảng rỗng
+
+    var manuafaturerTag = document.getElementById('manuafaturer_name')
+    //lấy thẻ có id là manuafaturer_name trong HTML
+    for(var key in manufactureList) {
+        manuafaturerTag.innerHTML += `<option value='${key}'>${key}</option>`//có giá trị là tên nhà sản xuất và nội dung là tên nhà sản xuất đó.
+        //innerHTML là một thuộc tính của đối tượng HTML trong JavaScript
+        // nó cho phép bạn lấy hoặc thiết lập nội dung HTML trong một thẻ HTML.
+    }
+    //nó sử dụng vòng lặp "for...in" để duyệt qua từng key trong object "manufactureList" và
+    // thêm từng giá trị vào drop-down list bằng cách sử dụng thuộc tính "innerHTML".
+
+    function changeManufaturer() {
+        key = manuafaturerTag.value
+        //key sẽ bằng 1 trong 3 giá trị
+        categoryList = manufactureList[key]
+        // console.log(categoryList);
+
+        var categoruTag = document.getElementById('category_name')
+        categoruTag.innerHTML = ''
+
+        if(categoryList != null) {
+            for (var i = 0; i < categoryList.length; i++) {
+                categoruTag.innerHTML += `<option value='${categoryList[i]}'>${categoryList[i]}</option>`
+            }
+        }
+    }
+    function updateTotalPrice() {
+        var price = document.getElementById('price').value
+        var quantity = document.getElementById('quantity').value
+
+        totalPrice = price * quantity
+
+        document.getElementById('total_price').value = totalPrice
+    }
+    var count = 0
+    function addProduct() {
+        var index = document.getElementById('index').value
+        console.log(index, 234);
+        var productName = document.getElementById('product_name').value
+        var manufactureName = document.getElementById('manuafaturer_name').value
+        var categoryName = document.getElementById('category_name').value
+        var price = document.getElementById('price').value
+        var quantity = document.getElementById('quantity').value
+        var totalPrice = document.getElementById('total_price').value
+        //lấy giá trị xuống rồi gán cho các element trong array product
+
+        var product = {
+            'productName': productName,
+            'manufactureName': manufactureName,
+            'categoryName': categoryName,
+            'price': price,
+            'quantity': quantity,
+            'totalPrice': totalPrice
+        }
+        //khai báo theo kiểu object
+
+
+        if(index != '') {
+            //Nếu biến index không rỗng (khác '')
+            console.log("????")
+            productList[index] = product
+            showProduct()
+            return;
+        }
+        // nó xử lý việc cập nhật một sản phẩm trong danh sách sản phẩm (productList).
+        productList.push(product)
+
+        document.getElementById('result').innerHTML += `<tr>
+						<td>${++count}</td>
+						<td>${productName}</td>
+						<td>${manufactureName}</td>
+						<td>${categoryName}</td>
+						<td>${price}</td>
+						<td>${quantity}</td>
+						<td>${totalPrice}</td>
+						<td><button class="btn btn-warning" onclick="editProduct(${count - 1})">Edit</button></td>
+						<td><button class="btn btn-danger" onclick="deleteProduct(${count - 1})">Delete</button></td>
+					</tr>`
+    }
+    function deleteProduct(index) {
+        console.log(index)
+        productList.splice(index, 1)
+        showProduct();
+    }
+
+    function showProduct() {
+        document.getElementById('result').innerHTML = ''
+
+        for (var i = 0; i < productList.length; i++) {
+            document.getElementById('result').innerHTML += `<tr>
+						<td>${i+1}</td>
+						<td>${productList[i].productName}</td>
+						<td>${productList[i].manufactureName}</td>
+						<td>${productList[i].categoryName}</td>
+						<td>${productList[i].price}</td>
+						<td>${productList[i].quantity}</td>
+						<td>${productList[i].totalPrice}</td>
+						<td><button class="btn btn-warning" onclick="editProduct(${i})">Edit</button></td>
+						<td><button class="btn btn-danger" onclick="deleteProduct(${i})">Delete</button></td>
+					</tr>`
+        }
+    }
+
+    function editProduct(index) {
+        var product = productList[index]
+        console.log(product)
+        document.getElementById('index').value = index
+        document.getElementById('product_name').value = product.productName
+        document.getElementById('manuafaturer_name').value = product.manufactureName
+        changeManufaturer()
+        document.getElementById('category_name').value = product.categoryName
+        document.getElementById('price').value = product.price
+        document.getElementById('quantity').value = product.quantity
+        document.getElementById('total_price').value = product.totalPrice
+    }
+    </script>
+</body>
+</html>
